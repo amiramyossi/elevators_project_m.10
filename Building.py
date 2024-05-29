@@ -17,6 +17,8 @@ class Building:
     def draw_all():
         pass
 
+
+
     
 
 
