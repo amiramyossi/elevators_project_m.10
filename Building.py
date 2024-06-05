@@ -23,6 +23,7 @@ class Building:
         for lift in self.__lifts:
             lift.draw_lift(self.__screen)
             lift.manage_tasks()
+         
 
 
             
@@ -31,6 +32,17 @@ class Building:
         for floor in self.__floors:
             if floor.need_lift():
                 self.call_lift(floor)
+
+    def check_lift_arrivals(self):
+        for lift in self.__lifts:
+            if lift.get_arrival_status():
+                lift.set_arrival_status(False)
+                self.arrive_at_dst(lift, lift.get_current_floor())
+
+    def arrive_at_dst(self, lift, floor):
+        floor.update_time_to_wait("")
+
+    # colour, ding, sleep 2 sec, erase timer if needed                     
                 
 
 
@@ -63,14 +75,22 @@ class Building:
 
     def call_lift(self, floor):
         best_lift, arrival_time = self.get_best_lift(floor)
-        best_lift.set_tasks(floor, arrival_time)
+        if len(best_lift.get_tasks()) < 1:
+            best_lift.set_tasks(floor, arrival_time)
+        else:
+            best_lift.set_tasks(floor, arrival_time + 2)   
         floor.set_need_lift()
         # display_time(arrival_time)
         # change_colour(to_green)
 
-    def update_lift_times(self, passed_time):
+    def update_times(self, passed_time):
         for lift in self.__lifts:
             lift.update_finish_time(passed_time)
+            if lift.get_tasks():
+                for i in range(len(lift.get_tasks())):
+                    floor, arrival_time = lift.get_tasks()[i]
+                    floor.update_time_to_wait(int(arrival_time))
+            
 
 
 

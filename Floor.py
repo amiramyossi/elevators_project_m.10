@@ -12,6 +12,8 @@ class Floor:
         self.__ceiling = FLOOR_HEIGHT * (self.__num + 1)
         self.__button_y = 0
         self.__need_lift = False
+        self.__time_to_wait = ""
+
 
     def draw_floor(self, screen):
         occupied_pixels = FLOOR_HEIGHT * (self.__num)
@@ -28,6 +30,8 @@ class Floor:
         self.__button_y = button.topleft[1]
         font = pygame.font.SysFont(None, 30)
         screen.blit(font.render(str(self.__num), True, (0, 0, 0)), font.render(str(self.__num), True, (255, 0, 0)).get_rect(center=(rect_area.center[0] - 2, rect_area.center[1] + 3)))
+        timer_font = pygame.font.SysFont(None, 30)
+        screen.blit(timer_font.render(str(self.__time_to_wait), True, (0, 0, 0)), timer_font.render(str(self.__time_to_wait), True, (255, 0, 0)).get_rect(center=(rect_area.center[0] + 80, rect_area.center[1] + 3)))
 
 
 
@@ -40,6 +44,12 @@ class Floor:
     
     def set_need_lift(self):
         self.__need_lift = False
+
+    def update_time_to_wait(self, time=any):
+        if str(time).isnumeric():
+            self.__time_to_wait = time + 1 
+        else:
+            self.__time_to_wait = time    
 
     def get_button_y(self):
         return self.__button_y    
