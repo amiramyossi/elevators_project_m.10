@@ -96,9 +96,9 @@ class Lift:
             else:
                 
                 two_sec_check = time.time()
-                if two_sec_check - self.__starting_time < 2:
-                    self.__pause_time = 2 - (two_sec_check - self.__starting_time)
-                else:    
+                if two_sec_check - self.__starting_time > 2:
+                    
+                 
                     self.__reference = False
                     self.__tasks.popleft()
                     

@@ -22,7 +22,7 @@ pygame.display.set_caption("Figuring out this Drek")
 
 
 BUILDING_HEIGHT = 11
-building = Building(screen, BUILDING_HEIGHT, 1)
+building = Building(screen, BUILDING_HEIGHT, 5)
 
 # clock = pygame.time.Clock()
 # clock.tick(60)
@@ -50,8 +50,8 @@ while running:
     # test_floor = building.get_floors()[3]
     # test_floor.request_lift()
     end = time.time()
-    if 1 / 32 + start - end > 0:
-        time.sleep(1 / 32 + start - end)
+    if 1 / 33.35 + start - end > 0:
+        time.sleep(1 / 33.35 + start - end)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
