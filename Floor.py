@@ -4,6 +4,9 @@ from Lift import Lift
 SCREEN_HEIGHT = 1000
 FLOOR_HEIGHT = 80
 FLOOR_WIDTH = 100
+GREEN = (0,255,0)
+BLACK = (0, 0, 0)
+NICE_GREY = (119,136,153)
 class Floor:
 
     def __init__(self, num):
@@ -11,8 +14,9 @@ class Floor:
           
         self.__ceiling = FLOOR_HEIGHT * (self.__num + 1)
         self.__button_y = 0
-        self.__need_lift = False
+        self.__need_lift = "No need for a lift."
         self.__time_to_wait = ""
+        self.__num_colour = BLACK
 
 
     def draw_floor(self, screen):
@@ -26,10 +30,10 @@ class Floor:
         pygame.draw.rect(screen, (0, 0, 0), black_line)
         button = pygame.Rect(0, 0, 25, 25)
         button.center = rect_area.center
-        pygame.draw.rect(screen, (150, 150, 150), (button.topleft[0] - 5, button.topleft[1], 30, 30), border_radius=8)
+        pygame.draw.rect(screen, NICE_GREY, (button.topleft[0] - 5, button.topleft[1], 30, 30), border_radius=8)
         self.__button_y = button.topleft[1]
         font = pygame.font.SysFont(None, 30)
-        screen.blit(font.render(str(self.__num), True, (0, 0, 0)), font.render(str(self.__num), True, (255, 0, 0)).get_rect(center=(rect_area.center[0] - 2, rect_area.center[1] + 3)))
+        screen.blit(font.render(str(self.__num), True, self.__num_colour), font.render(str(self.__num), True, (255, 0, 0)).get_rect(center=(rect_area.center[0] - 2, rect_area.center[1] + 3)))
         timer_font = pygame.font.SysFont(None, 30)
         screen.blit(timer_font.render(str(self.__time_to_wait), True, (0, 0, 0)), timer_font.render(str(self.__time_to_wait), True, (255, 0, 0)).get_rect(center=(rect_area.center[0] + 80, rect_area.center[1] + 3)))
 
@@ -37,19 +41,32 @@ class Floor:
 
 
     def request_lift(self):
-        self.__need_lift = True        
+        if self.__need_lift == "No need for a lift.":
+            self.__need_lift = "Please send a lift."
+            self.__num_colour = GREEN 
+        else:
+            return    
+
+               
 
     def need_lift(self):
         return self.__need_lift
     
-    def set_need_lift(self):
-        self.__need_lift = False
+    def set_need_lift(self, str):
+        self.__need_lift = str
+        
 
     def update_time_to_wait(self, time=any):
-        if str(time).isnumeric():
-            self.__time_to_wait = time + 1 
+        
+        if str(time).isnumeric() and time > 0:
+            self.__time_to_wait = time - 1 
         else:
-            self.__time_to_wait = time    
+            self.__time_to_wait = time
+            self.__num_colour = BLACK  
+
+    def change_colour(self, colour):
+        self.__num_colour = colour
+              
 
     def get_button_y(self):
         return self.__button_y    

@@ -21,7 +21,7 @@ pygame.display.set_caption("Figuring out this Drek")
 # lifty = Lift(1)
 
 
-BUILDING_HEIGHT = 10
+BUILDING_HEIGHT = 11
 building = Building(screen, BUILDING_HEIGHT, 1)
 
 # clock = pygame.time.Clock()
@@ -63,7 +63,13 @@ while running:
                     button_y = building.get_button_y(requested_floor)
                     if mouse_position[1] >= button_y and mouse_position[1] <= (button_y + 30):
                         approved_floor = building.get_floors()[requested_floor]
-                        approved_floor.request_lift()
+                        clicked = True
+                        for lift in building.get_lifts():
+                            if lift.get_current_floor() == approved_floor:
+                                clicked = False
+                                break
+                        if clicked:    
+                            approved_floor.request_lift()
                         
                 # building.check_click(mouse_position[1])    
 

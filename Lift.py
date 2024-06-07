@@ -25,6 +25,7 @@ class Lift:
         self.__stay_input_iterations = 0
         self.__reference = False
         self.__starting_time = 0
+        self.__pause_time = 0
         
         
    
@@ -62,31 +63,42 @@ class Lift:
     
     def set_arrival_status(self, status=bool):
         self.__arrival_status = status
+
+    def get_pause_time(self):
+        return self.__pause_time    
     
 
     def move(self, dst):
+        self.__current_floor = dst 
         
         y_of_dst = dst.get_y() 
         if self.__y != y_of_dst:
+            self.set_arrival_status(False)
             if self.__y < y_of_dst:
                 self.__y += 5
             else:
                 self.__y -= 5       
         
         else:
+            
+            
             if not self.__reference:
+                self.set_arrival_status(True)
                 self.__starting_time = time.time()
                 pygame.mixer.Sound.play(ding)
                 self.__reference = True
-                self.__current_floor = dst  
-                self.set_arrival_status(True)
+                
+                 
+                
                 
                 
 
             else:
                 
                 two_sec_check = time.time()
-                if two_sec_check - self.__starting_time > 2:
+                if two_sec_check - self.__starting_time < 2:
+                    self.__pause_time = 2 - (two_sec_check - self.__starting_time)
+                else:    
                     self.__reference = False
                     self.__tasks.popleft()
                     
