@@ -22,7 +22,7 @@ pygame.display.set_caption("Figuring out this Drek")
 
 
 BUILDING_HEIGHT = 11
-building = Building(screen, BUILDING_HEIGHT, 4)
+building = Building(screen, BUILDING_HEIGHT, 1)
 
 # clock = pygame.time.Clock()
 # clock.tick(60)
