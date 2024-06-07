@@ -50,8 +50,8 @@ while running:
     # test_floor = building.get_floors()[3]
     # test_floor.request_lift()
     end = time.time()
-    if 1 / 33.45 + start - end > 0:
-        time.sleep(1 / 33.45 + start - end)
+    if 1 / 33.42 + start - end > 0:
+        time.sleep(1 / 33.42 + start - end)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
