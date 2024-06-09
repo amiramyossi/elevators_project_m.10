@@ -12,9 +12,9 @@ SCREEN_HEIGHT = 1000
 FLOOR_HEIGHT = 80
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Figuring out this Drek")
+pygame.display.set_caption("Lift Game")
 
-
+ITERATIONS = 0
 
 
 # sixth_floor = Floor(6)
@@ -22,10 +22,10 @@ pygame.display.set_caption("Figuring out this Drek")
 
 
 BUILDING_HEIGHT = 11
-building = Building(screen, BUILDING_HEIGHT, 1)
+building = Building(screen, BUILDING_HEIGHT, 2)
 
-# clock = pygame.time.Clock()
-# clock.tick(60)
+clock = pygame.time.Clock()
+clock.tick(60)
 
 
 running = True
@@ -34,10 +34,14 @@ reference_time = time.time()
 # cycle = 5
 while running:
     start = time.time()
+    
+    building.update_times()
+           
+    
     # if cycle == 0:
-    current_time = time.time()
-    building.update_times(abs(reference_time - current_time))
-    reference_time = current_time
+    # current_time = time.time()
+    # # building.update_times(ITERATIONS)
+    # reference_time = current_time
     # else:
     #     iteration += 1 % cycle
     
@@ -50,8 +54,8 @@ while running:
     # test_floor = building.get_floors()[3]
     # test_floor.request_lift()
     end = time.time()
-    if 1 / 33.43 + start - end > 0:
-        time.sleep(1 / 33.43 + start - end)
+    if 1 / 32 + start - end > 0:
+        time.sleep(1 / 32 + start - end)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False

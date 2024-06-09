@@ -26,6 +26,9 @@ class Lift:
         self.__reference = False
         self.__starting_time = 0
         self.__pause_time = 0
+        self.__pausing_iterations = 0
+        self.__iterations = 0
+        
         
         
    
@@ -39,17 +42,32 @@ class Lift:
         screen.blit(self.lift_image, (occupied_pixels, self.__y))
 
     def set_tasks(self, floor, arrival_time):
-        self.__tasks.append((floor, arrival_time)) 
+        self.__iterations = 0
+       
+        self.__tasks.append((floor, arrival_time))   
 
-    def update_finish_time(self, passed_time):
+
+    def update_finish_time(self, elapsed_time):
         if self.__tasks:
-            for i in range(len(self.__tasks)):
-                floor, finish_time = self.__tasks[i]
-                if finish_time >= passed_time:
-                    finish_time -= passed_time
-                else:
-                    finish_time = 0
-                self.__tasks[i] = floor, finish_time        
+            floor, finish_time = self.__tasks[-1]
+            finish_time = max(0, finish_time - elapsed_time)
+            self.__tasks[-1] = floor, finish_time 
+            
+
+    # def update_finish_time(self):
+    #     if self.__iterations < 16:
+    #         self.__iterations += 1
+    #     elif self.__tasks:
+    #         self.__iterations = 0
+            
+    #         floor, finish_time = self.__tasks[-1]
+    #         if finish_time >= 0.5:
+    #             finish_time -= 0.5
+    #         else:
+    #                 finish_time = 0
+    #         self.__tasks[-1] = floor, finish_time   
+    #     else:
+    #         self.__iterations = 0         
 
 
     def set_current_floor(self, floor):
@@ -65,13 +83,19 @@ class Lift:
         self.__arrival_status = status
 
     def get_pause_time(self):
-        return self.__pause_time    
+          
+        return time.time() - self.__starting_time if self.__reference else 0 
     
 
     def move(self, dst):
         self.__current_floor = dst 
         
         y_of_dst = dst.get_y() 
+
+        
+           
+
+
         if self.__y != y_of_dst:
             self.set_arrival_status(False)
             if self.__y < y_of_dst:
@@ -85,6 +109,7 @@ class Lift:
             if not self.__reference:
                 self.set_arrival_status(True)
                 self.__starting_time = time.time()
+                self.__pause_time = time.time()
                 pygame.mixer.Sound.play(ding)
                 self.__reference = True
                 
@@ -94,17 +119,26 @@ class Lift:
                 
 
             else:
-                
-                two_sec_check = time.time()
-                if two_sec_check - self.__starting_time > 2:
+                    two_sec_check = time.time()
+                    if two_sec_check - self.__starting_time >= 2:
+                        
+                        self.__reference = False
                     
-                 
-                    self.__reference = False
-                    self.__tasks.popleft()
-                    
-                    self.__starting_time = 0
+                        self.__tasks.popleft()
+                        self.__arrival_status = False
 
-                # else:{}
+                    
+                        
+
+                    else:
+                        now = time.time()
+                        time_elapse = now - self.__pause_time
+                        self.__pause_time = now
+                        
+                        self.update_finish_time(time_elapse)    
+                          
+
+                
                     
                
             

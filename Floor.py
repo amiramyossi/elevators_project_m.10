@@ -15,7 +15,8 @@ class Floor:
         self.__ceiling = FLOOR_HEIGHT * (self.__num + 1)
         self.__button_y = 0
         self.__need_lift = "No need for a lift."
-        self.__time_to_wait = ""
+        self.__timer = 0
+        self.__iterations = 0
         self.__num_colour = BLACK
 
 
@@ -35,7 +36,9 @@ class Floor:
         font = pygame.font.SysFont(None, 30)
         screen.blit(font.render(str(self.__num), True, self.__num_colour), font.render(str(self.__num), True, (255, 0, 0)).get_rect(center=(rect_area.center[0] - 2, rect_area.center[1] + 3)))
         timer_font = pygame.font.SysFont(None, 30)
-        screen.blit(timer_font.render(str(self.__time_to_wait), True, (0, 0, 0)), timer_font.render(str(self.__time_to_wait), True, (255, 0, 0)).get_rect(center=(rect_area.center[0] + 80, rect_area.center[1] + 3)))
+        if self.__timer > 0:
+           display_time = round(self.__timer * 2) / 2  # Round to the nearest 0.5
+           screen.blit(timer_font.render(str(display_time), True, (0, 0, 0)), timer_font.render(str(display_time), True, (255, 0, 0)).get_rect(center=(rect_area.center[0] + 80, rect_area.center[1] + 3)))
 
 
 
@@ -54,15 +57,29 @@ class Floor:
     
     def set_need_lift(self, str):
         self.__need_lift = str
+
+    def set_colour(self):
+        self.__num_colour = BLACK  
+
+    def initialize_timer(self, time):
+        self.__iterations = 1
+        self.__timer = time  
+
+
+    def update_timer(self, elapsed_time):
+        if self.__timer > 0:
+            self.__timer = max(0, self.__timer - elapsed_time)      
         
 
-    def update_time_to_wait(self, time=any):
-        
-        if str(time).isnumeric() and time > 0:
-            self.__time_to_wait = time - 1 
-        else:
-            self.__time_to_wait = time
-            self.__num_colour = BLACK  
+    # def update_timer(self):
+    #     if self.__iterations < 16:
+    #         self.__iterations += 1
+    #     elif self.__timer >= 0.5:
+    #         self.__timer -= 0.5
+    #         self.__iterations = 0
+    #     else:
+    #         self.__iterations = 0        
+    
 
     def change_colour(self, colour):
         self.__num_colour = colour
