@@ -1,6 +1,6 @@
 import pygame
 from collections import deque
-import math
+
 import time
 
 
@@ -22,12 +22,12 @@ class Lift:
         self.lift_image = pygame.image.load("elv.png").convert_alpha()
         self.lift_image = pygame.transform.scale(self.lift_image, (100, 80))
         self.__arrival_status = False
-        self.__stay_input_iterations = 0
-        self.__reference = False
-        self.__starting_time = 0
-        self.__pause_time = 0
-        self.__pausing_iterations = 0
-        self.__iterations = 0
+        
+        self.__waiting = False
+        
+        
+        self.__pause_iterations_left = 0
+        
         
         
         
@@ -42,32 +42,11 @@ class Lift:
         screen.blit(self.lift_image, (occupied_pixels, self.__y))
 
     def set_tasks(self, floor, arrival_time):
-        self.__iterations = 0
+       
        
         self.__tasks.append((floor, arrival_time))   
 
-
-    def update_finish_time(self, elapsed_time):
-        if self.__tasks:
-            floor, finish_time = self.__tasks[-1]
-            finish_time = max(0, finish_time - elapsed_time)
-            self.__tasks[-1] = floor, finish_time 
-            
-
-    # def update_finish_time(self):
-    #     if self.__iterations < 16:
-    #         self.__iterations += 1
-    #     elif self.__tasks:
-    #         self.__iterations = 0
-            
-    #         floor, finish_time = self.__tasks[-1]
-    #         if finish_time >= 0.5:
-    #             finish_time -= 0.5
-    #         else:
-    #                 finish_time = 0
-    #         self.__tasks[-1] = floor, finish_time   
-    #     else:
-    #         self.__iterations = 0         
+        
 
 
     def set_current_floor(self, floor):
@@ -84,59 +63,41 @@ class Lift:
 
     def get_pause_time(self):
           
-        return time.time() - self.__starting_time if self.__reference else 0 
+        return (64 - self.__pause_iterations_left) / 32
     
 
-    def move(self, dst):
+    def move(self, dst, desired_arrival_time):
+        
         self.__current_floor = dst 
         
-        y_of_dst = dst.get_y() 
+        y_of_dst = dst.get_y()
 
+        time_to_dst = desired_arrival_time - time.time() if desired_arrival_time > time.time() else 0
+
+        if y_of_dst != self.__y:
+            self.__arrival_status = False
+
+
+        if y_of_dst > self.__y:
+            self.__y = y_of_dst - (time_to_dst * 160) 
+
+        elif y_of_dst < self.__y:
+            self.__y = y_of_dst + (time_to_dst * 160) 
+
+        elif not self.__waiting:
+            self.__arrival_status = True      
+            pygame.mixer.Sound.play(ding)
+            self.__waiting = True
+
+        elif time.time() >= desired_arrival_time + 2:
+
+            self.__waiting = False
+                    
+            self.__tasks.popleft()
+            self.__arrival_status = False
         
            
 
-
-        if self.__y != y_of_dst:
-            self.set_arrival_status(False)
-            if self.__y < y_of_dst:
-                self.__y += 5
-            else:
-                self.__y -= 5       
-        
-        else:
-            
-            
-            if not self.__reference:
-                self.set_arrival_status(True)
-                self.__starting_time = time.time()
-                self.__pause_time = time.time()
-                pygame.mixer.Sound.play(ding)
-                self.__reference = True
-                
-                 
-                
-                
-                
-
-            else:
-                    two_sec_check = time.time()
-                    if two_sec_check - self.__starting_time >= 2:
-                        
-                        self.__reference = False
-                    
-                        self.__tasks.popleft()
-                        self.__arrival_status = False
-
-                    
-                        
-
-                    else:
-                        now = time.time()
-                        time_elapse = now - self.__pause_time
-                        self.__pause_time = now
-                        
-                        self.update_finish_time(time_elapse)    
-                          
 
                 
                     
@@ -156,8 +117,9 @@ class Lift:
 
     def manage_tasks(self):
         if self.__tasks:
-            dst, _ = self.__tasks[0]
-            self.move(dst)
+            dst, finish_time = self.__tasks[0]
+            self.move(dst, finish_time - 2)
+            
         
                         
 

@@ -1,5 +1,6 @@
 import pygame
-from Lift import Lift
+
+import time
 
 SCREEN_HEIGHT = 1000
 FLOOR_HEIGHT = 80
@@ -16,11 +17,11 @@ class Floor:
         self.__button_y = 0
         self.__need_lift = "No need for a lift."
         self.__timer = 0
-        self.__iterations = 0
+        
         self.__num_colour = BLACK
 
 
-    def draw_floor(self, screen):
+    def draw_floor(self, screen, elapsed_time):
         occupied_pixels = FLOOR_HEIGHT * (self.__num)
         floor_image_big = pygame.image.load("floor_image.jpeg").convert_alpha()
         floor_image = pygame.transform.scale(floor_image_big, (FLOOR_WIDTH, FLOOR_HEIGHT))
@@ -36,8 +37,9 @@ class Floor:
         font = pygame.font.SysFont(None, 30)
         screen.blit(font.render(str(self.__num), True, self.__num_colour), font.render(str(self.__num), True, (255, 0, 0)).get_rect(center=(rect_area.center[0] - 2, rect_area.center[1] + 3)))
         timer_font = pygame.font.SysFont(None, 30)
+        self.__timer -= elapsed_time
         if self.__timer > 0:
-           display_time = round(self.__timer * 2) / 2  # Round to the nearest 0.5
+           display_time = round(self.__timer * 10) / 10   # Round to the nearest 0.5
            screen.blit(timer_font.render(str(display_time), True, (0, 0, 0)), timer_font.render(str(display_time), True, (255, 0, 0)).get_rect(center=(rect_area.center[0] + 80, rect_area.center[1] + 3)))
 
 
@@ -61,24 +63,16 @@ class Floor:
     def set_colour(self):
         self.__num_colour = BLACK  
 
-    def initialize_timer(self, time):
-        self.__iterations = 1
-        self.__timer = time  
-
-
-    def update_timer(self, elapsed_time):
-        if self.__timer > 0:
-            self.__timer = max(0, self.__timer - elapsed_time)      
+    def initialize_timer(self, finish_time):
         
+        self.__timer = finish_time - time.time()  
 
-    # def update_timer(self):
-    #     if self.__iterations < 16:
-    #         self.__iterations += 1
-    #     elif self.__timer >= 0.5:
-    #         self.__timer -= 0.5
-    #         self.__iterations = 0
-    #     else:
-    #         self.__iterations = 0        
+
+    def update_timer(self, time):
+        if self.__timer > 0:
+            self.__timer -= time      
+        
+      
     
 
     def change_colour(self, colour):
@@ -90,15 +84,7 @@ class Floor:
 
     def get_floor_num(self):
         return self.__num    
-
-    def display_time(self, arrival_time):
-        pass
-
-    def ding():
-        pass
-
-    def change_colour(self, to_colour):
-        pass    
+   
 
     def get_y(self):
         return SCREEN_HEIGHT - self.__ceiling
